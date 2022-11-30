@@ -14,7 +14,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static specs.LoginSpecs.loginRequestSpec;
 import static specs.LoginSpecs.loginResponseSpec;
 
-public class LoginTestExtended extends TestBase {
+public class LoginTestExtended {
 
     @Test
     void loginPojoModelTest() {
@@ -29,7 +29,7 @@ public class LoginTestExtended extends TestBase {
                 .contentType(JSON)
                 .body(loginCredentials)
                 .when()
-                .post(login)
+                .post("https://reqres.in/api/login")
                 .then()
                 .log().status()
                 .log().body()
@@ -53,7 +53,7 @@ public class LoginTestExtended extends TestBase {
                 .contentType(JSON)
                 .body(loginCredentials)
                 .when()
-                .post(login)
+                .post("https://reqres.in/api/login")
                 .then()
                 .log().status()
                 .log().body()
@@ -75,7 +75,7 @@ public class LoginTestExtended extends TestBase {
                 .contentType(JSON)
                 .body(loginCredentials)
                 .when()
-                .post(login)
+                .post("https://reqres.in/api/login")
                 .then()
                 .log().status()
                 .log().body()
@@ -96,7 +96,7 @@ public class LoginTestExtended extends TestBase {
                 .contentType(JSON)
                 .body(loginCredentials)
                 .when()
-                .post(login)
+                .post("https://reqres.in/api/login")
                 .then()
                 .log().status()
                 .log().body()

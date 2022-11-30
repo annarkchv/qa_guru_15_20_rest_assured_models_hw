@@ -6,7 +6,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
 
-public class LoginTest extends TestBase {
+public class LoginTest {
 
     @Test
     void registerSuccessful() {
@@ -16,7 +16,7 @@ public class LoginTest extends TestBase {
                 .contentType(JSON)
                 .body(data)
                 .when()
-                .post(login)
+                .post("https://reqres.in/api/login")
                 .then()
                 .log().status()
                 .log().body()
@@ -31,7 +31,7 @@ public class LoginTest extends TestBase {
                 .contentType(JSON)
                 .body(data)
                 .when()
-                .post(login)
+                .post("https://reqres.in/api/login")
                 .then()
                 .log().status()
                 .log().body()
