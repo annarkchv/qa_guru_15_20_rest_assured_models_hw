@@ -1,41 +1,51 @@
 package tests;
 
+import models.RequestModel;
+import models.ResponseModel;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static specs.RequestSpec.postRequestSpec;
 
 public class LoginTest extends TestBase {
+    RequestModel loginCredentials = new RequestModel();
 
     @Test
-    void registerSuccessful() {
-        String data = "{ \"email\": \"eve.holt@reqres.in\", \"password\": \"cityslicka\" }";
+    void loginSuccessful() {
+        loginCredentials.setEmail("eve.holt@reqres.in");
+        loginCredentials.setPassword("cityslicka");
 
-        given()
-                .contentType(JSON)
-                .body(data)
+        ResponseModel response = given()
+                .spec(postRequestSpec)
+                .body(loginCredentials)
                 .when()
                 .post(login)
                 .then()
                 .log().status()
                 .log().body()
-                .statusCode(200);
+                .statusCode(200)
+                .extract().as(ResponseModel.class);
+
+        assertThat(response.getToken()).isEqualTo("QpwL5tke4Pnpja7X4");
     }
 
     @Test
-    void registerUnsuccessful() {
-        String data = "{ \"email\": \"eve.holt@reqres.in\"}";
+    void loginUnsuccessful() {
+        loginCredentials.setEmail("eve.holt@reqres.in");
 
-        given()
-                .contentType(JSON)
-                .body(data)
+        ResponseModel response = given()
+                .spec(postRequestSpec)
+                .body(loginCredentials)
                 .when()
                 .post(login)
                 .then()
                 .log().status()
                 .log().body()
                 .statusCode(400)
-                .body("error", is("Missing password"));
+                .extract().as(ResponseModel.class);
+
+        assertThat(response.getError()).isEqualTo("Missing password");
     }
 }

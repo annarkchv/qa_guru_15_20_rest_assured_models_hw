@@ -1,41 +1,51 @@
 package tests;
 
+import models.RequestModel;
+import models.ResponseModel;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static specs.RequestSpec.postRequestSpec;
 
 public class RegisterTest extends TestBase {
 
+    RequestModel registerCredentials = new RequestModel();
+
     @Test
     void registerSuccessful() {
-        String data = "{ \"email\": \"eve.holt@reqres.in\", \"password\": \"cityslicka\" }";
+        registerCredentials.setEmail("eve.holt@reqres.in");
+        registerCredentials.setPassword("cityslicka");
 
-        given()
-                .contentType(JSON)
-                .body(data)
+        ResponseModel response = given()
+                .spec(postRequestSpec)
+                .body(registerCredentials)
                 .when()
                 .post(register)
                 .then()
                 .log().status()
                 .log().body()
-                .statusCode(200);
+                .statusCode(200)
+                .extract().as(ResponseModel.class);
+
+        assertThat(response.getId()).isEqualTo(4);
     }
 
     @Test
     void registerUnsuccessful() {
-        String data = "{ \"email\": \"eve.holt@reqres.in\"}";
+        registerCredentials.setEmail("eve.holt@reqres.in");
 
-        given()
-                .contentType(JSON)
-                .body(data)
+        ResponseModel response = given()
+                .spec(postRequestSpec)
+                .body(registerCredentials)
                 .when()
                 .post(register)
                 .then()
                 .log().status()
                 .log().body()
                 .statusCode(400)
-                .body("error", is("Missing password"));
+                .extract().as(ResponseModel.class);
+
+        assertThat(response.getError()).isEqualTo("Missing password");
     }
 }

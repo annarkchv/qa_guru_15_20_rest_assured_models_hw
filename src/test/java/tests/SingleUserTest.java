@@ -1,16 +1,23 @@
 package tests;
 
+import models.RequestModel;
+import models.ResponseModel;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.*;
-import static io.restassured.http.ContentType.JSON;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
+import static specs.RequestSpec.getRequestSpec;
+import static specs.RequestSpec.postRequestSpec;
 
 public class SingleUserTest extends TestBase {
+    RequestModel userData = new RequestModel();
 
     @Test
     void singleUserInfo() {
-        get(singleUser)
+        given()
+                .spec(getRequestSpec)
+                .get(singleUser)
                 .then()
                 .log().body()
                 .body("data.id", is(2))
@@ -21,41 +28,49 @@ public class SingleUserTest extends TestBase {
 
     @Test
     void createUser() {
-        String data = "{ \"name\": \"Jane Doe\", \"job\": \"QA Engineer\" }";
+        userData.setName("Jane Doe");
+        userData.setJob("QA Engineer");
 
-        given()
-                .contentType(JSON)
-                .body(data)
+        ResponseModel response = given()
+                .spec(postRequestSpec)
+                .body(userData)
                 .when()
                 .post(createUser)
                 .then()
                 .log().status()
                 .log().body()
-                .body("name", is("Jane Doe"))
-                .body("job", is("QA Engineer"))
-                .statusCode(201);
+                .statusCode(201)
+                .extract().as(ResponseModel.class);
+
+        assertThat(response.getName()).isEqualTo(userData.getName());
+        assertThat(response.getJob()).isEqualTo(userData.getJob());
     }
 
     @Test
     void updateUser() {
-        String data = "{ \"name\": \"Jane Doe\", \"job\": \"QA Engineer\" }";
+        userData.setName("Jane Doe");
+        userData.setJob("QA Engineer");
 
-        given()
-                .contentType(JSON)
-                .body(data)
+        ResponseModel response = given()
+                .spec(postRequestSpec)
+                .body(userData)
                 .when()
                 .put(singleUser)
                 .then()
                 .log().status()
                 .log().body()
-                .body("name", is("Jane Doe"))
-                .body("job", is("QA Engineer"))
-                .statusCode(200);
+                .statusCode(200)
+                .extract().as(ResponseModel.class);
+
+        assertThat(response.getName()).isEqualTo(userData.getName());
+        assertThat(response.getJob()).isEqualTo(userData.getJob());
     }
 
     @Test
     void deleteUser() {
-        delete(singleUser)
+        given()
+                .spec(getRequestSpec)
+                .delete(singleUser)
                 .then()
                 .log().status()
                 .log().body()
